@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout Code
@@ -31,11 +31,15 @@ jobs:
           pip install "flet[all]" yt-dlp imageio-ffmpeg
 
       - name: Build Android APK
+        env:
+          CI: "true"
+          FLET_NON_INTERACTIVE: "true"
         run: |
-          flet build apk --project "AbShahDownloader" --org "com.abshah.downloader" --yes -vv
+          flet build apk --project "AbShahDownloader" --org "com.abshah.downloader" -vv
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: AbShah-Downloader-APK
           path: build/apk/*.apk
