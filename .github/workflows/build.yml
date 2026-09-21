@@ -19,10 +19,10 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Flutter
+      - name: Setup Flutter 3.44.8
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.2'
+          flutter-version: '3.44.8'
           channel: 'stable'
           cache: true
 
@@ -33,12 +33,12 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install flet yt-dlp imageio-ffmpeg
 
       - name: Build Android APK
         run: |
-          flet build apk --project "AbShahDownloader" --org "com.abshah.downloader" -vv
+          yes y | flet build apk --project "AbShahDownloader" --org "com.abshah.downloader" -vv
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
