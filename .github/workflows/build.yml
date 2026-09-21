@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - name: Checkout Code
@@ -19,13 +20,6 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Flutter 3.44.8
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.44.8'
-          channel: 'stable'
-          cache: true
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -34,11 +28,11 @@ jobs:
       - name: Install Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flet yt-dlp imageio-ffmpeg
+          pip install "flet[all]" yt-dlp imageio-ffmpeg
 
       - name: Build Android APK
         run: |
-          yes y | flet build apk --project "AbShahDownloader" --org "com.abshah.downloader" -vv
+          flet build apk --project "AbShahDownloader" --org "com.abshah.downloader" --yes -vv
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
