@@ -1,0 +1,45 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install flet yt-dlp imageio-ffmpeg
+
+      - name: Build APK
+        run: |
+          flet build apk --project "AbShahDownloader" --org "com.abshah.downloader"
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: AbShah-Downloader-APK
+          path: build/apk/*.apk
