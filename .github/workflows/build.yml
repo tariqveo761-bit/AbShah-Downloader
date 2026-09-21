@@ -22,6 +22,7 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
+          flutter-version: '3.22.2'
           channel: 'stable'
           cache: true
 
@@ -32,13 +33,14 @@ jobs:
 
       - name: Install Dependencies
         run: |
+          pip install --upgrade pip
           pip install flet yt-dlp imageio-ffmpeg
 
-      - name: Build APK
+      - name: Build Android APK
         run: |
-          flet build apk --project "AbShahDownloader" --org "com.abshah.downloader"
+          flet build apk --project "AbShahDownloader" --org "com.abshah.downloader" -vv
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: AbShah-Downloader-APK
