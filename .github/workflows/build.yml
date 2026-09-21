@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
 
     steps:
       - name: Checkout Repository
@@ -20,26 +20,28 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Flutter Engine
-        uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-          cache: true
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install Python Tools
+      - name: Pre-install Flet Expected Flutter 3.44.8
+        run: |
+          mkdir -p /root/flutter/3.44.8
+          git clone -b 3.44.8 https://github.com/flutter/flutter.git /root/flutter/3.44.8 || git clone -b stable https://github.com/flutter/flutter.git /root/flutter/3.44.8
+          git config --global --add safe.directory "*"
+          echo "/root/flutter/3.44.8/bin" >> $GITHUB_PATH
+
+      - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install flet yt-dlp imageio-ffmpeg
 
-      - name: Build Android APK Package
+      - name: Build Android APK
+        env:
+          TERM: dumb
         run: |
-          flutter doctor -v
-          flet build apk --project "AbShahDownloader" --org "com.abshah.downloader" -vv
+          flet build apk --flutter-path /root/flutter/3.44.8 --project "AbShahDownloader" --org "com.abshah.downloader" -vv || flet build apk --project "AbShahDownloader" --org "com.abshah.downloader" -vv
 
       - name: Upload APK File
         uses: actions/upload-artifact@v4
