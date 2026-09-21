@@ -11,7 +11,7 @@ jobs:
     timeout-minutes: 20
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Setup Java 17
@@ -20,24 +20,28 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Setup Flutter Engine
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      - name: Install Dependencies
+      - name: Install Python Tools
         run: |
           python -m pip install --upgrade pip
-          pip install "flet[all]" yt-dlp imageio-ffmpeg
+          pip install flet yt-dlp imageio-ffmpeg
 
-      - name: Build Android APK
-        env:
-          CI: "true"
-          FLET_NON_INTERACTIVE: "true"
+      - name: Build Android APK Package
         run: |
+          flutter doctor -v
           flet build apk --project "AbShahDownloader" --org "com.abshah.downloader" -vv
 
-      - name: Upload APK Artifact
+      - name: Upload APK File
         uses: actions/upload-artifact@v4
         if: always()
         with:
